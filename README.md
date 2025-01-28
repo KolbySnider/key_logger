@@ -14,7 +14,7 @@ cd key_logger
 ## Features
 
 
-- Memoy mapped key-log, only writes to drive on exfil
+- Memory mapped key-log, only writes to drive on exfil
 - Basic Anti-Analysis
 - Email exfiltration via powershell
 - Persistence via modifying HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionRun   
