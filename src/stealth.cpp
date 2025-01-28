@@ -23,7 +23,7 @@ bool move_to_recycle_bin(const std::string& filePath) {
     return (SHFileOperationA(&fileOp) == 0);
 }
 
-// Function implementations
+
 void hide_console() {
     HWND stealth;
     AllocConsole();
