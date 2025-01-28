@@ -5,7 +5,6 @@
 #include <string>
 
 
-// Function declarations
 LRESULT keyboard_proc(int nCode, WPARAM wparam, LPARAM lparam);
 bool install_hook();
 bool uninstall_hook();
