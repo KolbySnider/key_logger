@@ -1,0 +1,7 @@
+# ninja log v6
+11	1833	7597415937799266	CMakeFiles/key_logger.dir/src/anti_eyes.cpp.obj	f329265141aba08a
+19	2530	7597415937872964	CMakeFiles/key_logger.dir/src/memory.cpp.obj	db4ba0b64403e2d5
+7	2615	7597415937762429	CMakeFiles/key_logger.dir/src/stealth.cpp.obj	6468174139706671
+2	2820	7597415937708764	CMakeFiles/key_logger.dir/src/main.cpp.obj	66f871437a1167dc
+15	3172	7597415937836507	CMakeFiles/key_logger.dir/src/key_hook.cpp.obj	5b5099891c2f779e
+3172	3337	7597415969402216	key_logger.exe	96d59fe61f72889b
