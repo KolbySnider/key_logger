@@ -5,3 +5,10 @@
 2	2820	7597415937708764	CMakeFiles/key_logger.dir/src/main.cpp.obj	66f871437a1167dc
 15	3172	7597415937836507	CMakeFiles/key_logger.dir/src/key_hook.cpp.obj	5b5099891c2f779e
 3172	3337	7597415969402216	key_logger.exe	96d59fe61f72889b
+32	1709	7597500972648858	CMakeFiles/key_logger.dir/src/stealth.cpp.obj	6468174139706671
+1709	2016	7597500989411926	key_logger.exe	96d59fe61f72889b
+8	1687	7597510795399323	CMakeFiles/key_logger.dir/src/memory.cpp.obj	db4ba0b64403e2d5
+5	1866	7597510795359323	CMakeFiles/key_logger.dir/src/main.cpp.obj	66f871437a1167dc
+1866	1998	7597510813969331	key_logger.exe	96d59fe61f72889b
+6	1642	7597514448579510	CMakeFiles/key_logger.dir/src/memory.cpp.obj	db4ba0b64403e2d5
+1643	1767	7597514464949657	key_logger.exe	96d59fe61f72889b

