@@ -1,9 +1,9 @@
-#include "../include/anti_eyes.h"  // Use relative path to your header
+#include "../include/anti_eyes.h"  
 
-// Implementations below
+
 DWORD WINAPI anti_virtual_machine(LPVOID lpParam) {
     while (true) {
-        ExitProcess(1);  // Immediately terminates the process
+        ExitProcess(1);  
     }
     return 0;
 }
