@@ -17,7 +17,8 @@ cd key_logger
 - Memory mapped key-log, only writes to drive on exfil
 - Basic Anti-Analysis
 - Email exfiltration via powershell
-- Persistence via modifying HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionRun   
+- Persistence via modifying HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionRun
+- Process list manipulation (done via URootkit.dll, Author: https://github.com/ZeroMemoryEx/URootkit)
 
 ## License
 Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
