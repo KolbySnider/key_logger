@@ -44,5 +44,5 @@ void send_email() {
     CloseHandle(pi.hThread);
 
     // Delete the file after sending the email
-    DeleteFileW(L"attachment.txt");
+    //DeleteFileW(L"attachment.txt");
 }

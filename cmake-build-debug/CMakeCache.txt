@@ -243,15 +243,6 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Value Computed by CMake
-Keylogger2_BINARY_DIR:STATIC=C:/Users/kolby/CLionProjects/key_logger/cmake-build-debug
-
-//Value Computed by CMake
-Keylogger2_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-Keylogger2_SOURCE_DIR:STATIC=C:/Users/kolby/CLionProjects/key_logger
-
-//Value Computed by CMake
 key_logger_BINARY_DIR:STATIC=C:/Users/kolby/CLionProjects/key_logger/cmake-build-debug
 
 //Value Computed by CMake
