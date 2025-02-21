@@ -4,7 +4,7 @@ A simple C++ keylogger
 
 ## Installation
 
-Install my-project with git
+Install my project with git
 
 ```bash
 git clone https://github.com/KolbySnider/key_logger
