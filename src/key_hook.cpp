@@ -4,7 +4,7 @@
 #include "../include/Stealth.h"
 #include "../include/IO.h"
 #include "../include/key_constants.h"
-#include "../include/memory.h"
+#include "../include/post_request.h"
 
 std::atomic<bool> g_running(true);
 

