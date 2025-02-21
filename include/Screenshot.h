@@ -1,94 +1,82 @@
+#include <vector>
 #include <Windows.h>
 
-// Function to save the current screen bitmap to a file
-BOOL WINAPI save_bitmap(WCHAR* wPath) {
+std::vector<char> capture_screenshot() {
+    std::vector<char> bmpData;
 
-    // Structures to hold bitmap file and info headers
-    BITMAPFILEHEADER bfHeader;
-    BITMAPINFOHEADER biHeader;
-    BITMAPINFO bInfo;
-    BITMAP bAllDesktops;
+    // Get virtual screen dimensions
+    int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-    // Handles and pointers for device contexts and bitmap
-    HGDIOBJ hTempBitmap;
-    HBITMAP hBitmap;
-    HDC hDC, hMemDC;
-    BYTE* bBits = NULL;
-    HANDLE hHeap = GetProcessHeap();
-    DWORD cbBits, dwWritten = 0;
-    HANDLE hFile;
-
-    // Get the virtual screen dimensions
-    INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-    INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-
-    // Initialize memory
-    ZeroMemory(&bfHeader, sizeof(BITMAPFILEHEADER));
-    ZeroMemory(&biHeader, sizeof(BITMAPINFOHEADER));
-    ZeroMemory(&bInfo, sizeof(BITMAPINFO));
-    ZeroMemory(&bAllDesktops, sizeof(BITMAP));
-
-    // Get the device context of the entire screen
-    hDC = GetDC(NULL);
-
-    // Retrieve the current bitmap object
-    hTempBitmap = GetCurrentObject(hDC, OBJ_BITMAP);
-    GetObjectW(hTempBitmap, sizeof(BITMAP), &bAllDesktops);
-
-    // Get width and height of the desktop bitmap
-    LONG lWidth = bAllDesktops.bmWidth;
-    LONG lHeight = bAllDesktops.bmHeight;
-
-    // Clean up the temporary bitmap object
-    DeleteObject(hTempBitmap);
-
-    // Set up the bitmap file header
-    bfHeader.bfType = (WORD)('B' | ('M' << 8)); // 'BM' in little-endian format
-    bfHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-
-    // Set up the bitmap info header
-    biHeader.biSize = sizeof(BITMAPINFOHEADER);
-    biHeader.biBitCount = 24; // 24-bit bitmap (RGB)
-    biHeader.biCompression = BI_RGB; // No compression
-    biHeader.biPlanes = 1; // Number of color planes
-    biHeader.biWidth = lWidth;
-    biHeader.biHeight = lHeight; // Positive value means the image is top-down
-
-    bInfo.bmiHeader = biHeader;
-
-    // Calculate the size of the bitmap data
-    cbBits = (((24 * lWidth + 31) & ~31) / 8) * lHeight;
-
-    // Create a memory device context and compatible bitmap
-    hMemDC = CreateCompatibleDC(hDC);
-    hBitmap = CreateDIBSection(hDC, &bInfo, DIB_RGB_COLORS, (VOID**)&bBits, NULL, 0);
-    SelectObject(hMemDC, hBitmap);
-
-    // Copy the screen content to the memory DC
-    BitBlt(hMemDC, 0, 0, lWidth, lHeight, hDC, x, y, SRCCOPY);
-
-    // Create or open the file where the bitmap will be saved
-    hFile = CreateFileW(wPath, GENERIC_WRITE | GENERIC_READ, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (INVALID_HANDLE_VALUE == hFile) {
-        // Clean up resources if file creation failed
-        DeleteDC(hMemDC);
-        ReleaseDC(NULL, hDC);
-        DeleteObject(hBitmap);
-
-        return FALSE; // Indicate failure
+    // Get device contexts
+    HDC hScreenDC = GetDC(NULL);
+    HDC hMemDC = CreateCompatibleDC(hScreenDC);
+    if (!hMemDC) {
+        ReleaseDC(NULL, hScreenDC);
+        return bmpData;
     }
 
-    // Write the headers and bitmap data to the file
-    WriteFile(hFile, &bfHeader, sizeof(BITMAPFILEHEADER), &dwWritten, NULL);
-    WriteFile(hFile, &biHeader, sizeof(BITMAPINFOHEADER), &dwWritten, NULL);
-    WriteFile(hFile, bBits, cbBits, &dwWritten, NULL);
-    FlushFileBuffers(hFile); // Ensure all data is written to the file
-    CloseHandle(hFile); // Close the file handle
+    // Set up bitmap info header for a 24-bit image
+    BITMAPINFOHEADER bi;
+    ZeroMemory(&bi, sizeof(BITMAPINFOHEADER));
+    bi.biSize = sizeof(BITMAPINFOHEADER);
+    bi.biWidth = width;
+    bi.biHeight = height;  // positive for bottom-up DIB (you can make it negative for top-down)
+    bi.biPlanes = 1;
+    bi.biBitCount = 24;    // 24-bit
+    bi.biCompression = BI_RGB;
 
-    // Clean up resources
-    DeleteDC(hMemDC);
-    ReleaseDC(NULL, hDC);
+    // Prepare BITMAPINFO structure
+    BITMAPINFO biInfo;
+    ZeroMemory(&biInfo, sizeof(BITMAPINFO));
+    biInfo.bmiHeader = bi;
+
+    // Pointer to receive the pixel data
+    void* lpPixels = nullptr;
+    HBITMAP hBitmap = CreateDIBSection(hScreenDC, &biInfo, DIB_RGB_COLORS, &lpPixels, NULL, 0);
+    if (!hBitmap) {
+        DeleteDC(hMemDC);
+        ReleaseDC(NULL, hScreenDC);
+        return bmpData;
+    }
+
+    HGDIOBJ oldBitmap = SelectObject(hMemDC, hBitmap);
+
+    // Copy the screen into the memory device context
+    if (!BitBlt(hMemDC, 0, 0, width, height, hScreenDC, x, y, SRCCOPY)) {
+        SelectObject(hMemDC, oldBitmap);
+        DeleteObject(hBitmap);
+        DeleteDC(hMemDC);
+        ReleaseDC(NULL, hScreenDC);
+        return bmpData;
+    }
+
+    // Calculate padded row size (each row is aligned to 4 bytes)
+    int rowStride = ((width * 24 + 31) / 32) * 4;
+    DWORD bmpSize = rowStride * height;
+
+    // Create a BITMAPFILEHEADER
+    BITMAPFILEHEADER bmfHeader;
+    ZeroMemory(&bmfHeader, sizeof(BITMAPFILEHEADER));
+    bmfHeader.bfType = 0x4D42; // 'BM'
+    bmfHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+    bmfHeader.bfSize = bmfHeader.bfOffBits + bmpSize;
+
+    // Resize the vector to hold the entire BMP file data
+    bmpData.resize(bmfHeader.bfSize);
+
+    // Copy headers and pixel data into the vector
+    memcpy(bmpData.data(), &bmfHeader, sizeof(BITMAPFILEHEADER));
+    memcpy(bmpData.data() + sizeof(BITMAPFILEHEADER), &bi, sizeof(BITMAPINFOHEADER));
+    memcpy(bmpData.data() + bmfHeader.bfOffBits, lpPixels, bmpSize);
+
+    // Clean up
+    SelectObject(hMemDC, oldBitmap);
     DeleteObject(hBitmap);
+    DeleteDC(hMemDC);
+    ReleaseDC(NULL, hScreenDC);
 
-    return TRUE; // Indicate success
+    return bmpData;
 }

