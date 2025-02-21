@@ -4,7 +4,7 @@ A simple C++ keylogger
 
 ## Installation
 
-Install my-project with git
+Install my project with git
 
 ```bash
 git clone https://github.com/KolbySnider/key_logger
@@ -14,9 +14,9 @@ cd key_logger
 ## Features
 
 
-- Memory mapped key-log, only writes to drive on exfil
+- Memory mapped key-log, never writes to drive
 - Basic Anti-Analysis
-- Email exfiltration via powershell
+- Data exfiltration done via POST requests using simple python web-server
 - Persistence via modifying HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionRun
 - Process list manipulation (done via URootkit.dll, Author: https://github.com/ZeroMemoryEx/URootkit)
 
