@@ -56,7 +56,6 @@ DWORD WINAPI detect_process(LPVOID lpParam) {
                     MessageBox(NULL, "Fail", "Error", NULL);
                 }
                 CloseHandle(hProcess1);
-                MessageBox(NULL, "I have been followed by Process Explorer! Haha, Cancel it!", "Error", NULL);
             }
         } while (Process32Next(hProcessSnapshot, &processEntry32));
 
